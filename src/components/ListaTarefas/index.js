@@ -7,28 +7,30 @@ import {
   TaskInput,
   AddTaskButton,
   RemoveButton,
-  LinhaHorizontal
+  LinhaHorizontal,
 } from "./styled";
 import bin from "../../assets/bin.png";
+import { Done } from "../Done/Done";
 
 const listaDeTarefasInicial = [
   {
-    titulo: "Fazer exercícios"
+    titulo: "Fazer exercícios",
   },
   {
-    titulo: "Estudar React"
-  }
+    titulo: "Estudar React",
+  },
 ];
 
 export function ListaTarefas() {
   const [lista, setLista] = useState(listaDeTarefasInicial);
   const [novaTarefa, setNovaTarefa] = useState({ titulo: "" });
+  const [removed, setRemoved] = useState([]);
 
   const onChangeTarefa = (event) => {
+    //função que adiciona a tarefa
     const tarefa = {
-      titulo: event.target.value
+      titulo: event.target.value,
     };
-
     setNovaTarefa(tarefa);
   };
 
@@ -38,10 +40,25 @@ export function ListaTarefas() {
     setNovaTarefa({ titulo: "" });
   };
 
+  const enter = (event) => {
+    //função do enter
+    if (event.key === "Enter") {
+      const novaTarefa = {
+        titulo: event.target.value,
+      };
+      setLista([...lista, novaTarefa]);
+      console.log(novaTarefa);
+      setNovaTarefa({ titulo: "" });
+    }
+  };
+
   const removeTarefa = (tarefaParaRemover) => {
+    //função para remover
     const listaFiltrada = lista.filter(
       (tarefa) => tarefa.titulo !== tarefaParaRemover.titulo
     );
+
+    setRemoved([...removed, tarefaParaRemover]);
     setLista(listaFiltrada);
   };
 
@@ -52,11 +69,13 @@ export function ListaTarefas() {
           placeholder="Digite aqui uma tarefa"
           value={novaTarefa.titulo}
           onChange={onChangeTarefa}
+          onKeyDown={enter}
         />
         <AddTaskButton onClick={adicionaTarefa}>Adicionar</AddTaskButton>
       </InputContainer>
       <ListaContainer>
         <ul>
+          <h2>Tarefas a concluir</h2>
           {lista.map((tarefa, index) => {
             return (
               <Tarefa key={index}>
@@ -70,6 +89,7 @@ export function ListaTarefas() {
         </ul>
       </ListaContainer>
       <LinhaHorizontal />
+      <Done lista={removed} />
     </ListaTarefasContainer>
   );
 }
